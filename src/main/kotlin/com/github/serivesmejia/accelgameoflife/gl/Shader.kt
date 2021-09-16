@@ -14,6 +14,7 @@ class Shader {
         private set
 
     val projectionLocation by lazy { getUniformLocation("projection") }
+    val texureSamplerLocation by lazy { getUniformLocation("texture_sampler") }
 
     init {
         if(programId == 0) {
@@ -84,6 +85,17 @@ class Shader {
     fun bindAttribute(attribute: Int, name: String) {
         glBindAttribLocation(programId, attribute, name)
     }
+
+    fun setUniform(location: Int, value: Int) {
+        glUniform1i(location, value)
+    }
+
+
+    var texture: Int = 0
+        set(value) {
+            setUniform(texureSamplerLocation, value)
+            field = value
+        }
 
     var projection: Matrix4f = Matrix4f()
         set(value) {

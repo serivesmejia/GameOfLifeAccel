@@ -6,11 +6,30 @@ import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30
 
 class Square(
-    val position: Vector2f,
-    val size: Float
+    pos: Vector2f,
+    size: Float
 ) {
 
-    val vao = VAO(makeVertices())
+    var position = pos
+        set(value) {
+            vao.updateVertices(makeVertices())
+            field = value
+        }
+
+    var size = size
+        set(value) {
+            vao.updateVertices(makeVertices())
+            field = value
+        }
+
+    val textCoords = floatArrayOf(
+        0f, 0f,
+        0f, 0.5f,
+        0.5f, 0.5f,
+        0.5f, 0f
+    )
+
+    val vao = VAO(makeVertices(), textCoords)
 
     fun draw() {
         GL30.glBindVertexArray(vao.vaoID)

@@ -3,6 +3,7 @@ package com.github.serivesmejia.accelgameoflife
 
 import org.joml.Matrix4f
 import org.joml.Vector2f
+import org.joml.Vector3f
 import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
@@ -11,6 +12,8 @@ import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.glViewport
 import org.lwjgl.system.MemoryStack.stackPush
 import org.lwjgl.system.MemoryUtil.NULL
+
+val ZERO = Vector3f()
 
 /**
  * Create a window using the desktop GLFW API
@@ -94,8 +97,10 @@ class Window(initialTitle: String = "LIFE",
         return s.x / s.y
     }
 
-    var projectionMatrix = Matrix4f()
-        private set
+    val projectionMatrix = Matrix4f()
+
+    val mousePosition = Vector2f()
+    val viewportMousePosition = Vector2f()
 
     /**
      * Initializes glfw and creates this window
@@ -137,6 +142,24 @@ class Window(initialTitle: String = "LIFE",
             updateProjectionMatrix()
         }
 
+        glfwSetCursorPosCallback(ptr) { _, xpos: Double, ypos: Double ->
+            val size = size
+            val viewport = intArrayOf(
+                0, 0, size.x.toInt(), size.y.toInt()
+            )
+
+            mousePosition.x = xpos.toFloat()
+            mousePosition.y = ypos.toFloat()
+
+            val screenPos = projectionMatrix.unproject(
+                xpos.toFloat(), size.y - ypos.toFloat(), 1f,
+                viewport, ZERO
+            )
+
+            viewportMousePosition.x = screenPos.x
+            viewportMousePosition.y = screenPos.y
+        }
+
         updateProjectionMatrix()
 
         GL.createCapabilities()
@@ -145,7 +168,8 @@ class Window(initialTitle: String = "LIFE",
     fun updateProjectionMatrix() {
         val currSize = size
 
-        projectionMatrix = Matrix4f().ortho2D(
+        projectionMatrix.identity()
+        projectionMatrix.ortho2D(
             -currSize.x / 2, currSize.x / 2,
             -currSize.y / 2, currSize.y / 2
         )
