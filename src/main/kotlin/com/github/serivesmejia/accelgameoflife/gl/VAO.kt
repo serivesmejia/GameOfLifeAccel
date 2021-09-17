@@ -30,14 +30,15 @@ class VAO(vertices: FloatArray, textCoords: FloatArray) {
         // VBO creation
         vboID = glGenBuffers()
 
+        // Bind the VBO
+        glBindBuffer(GL_ARRAY_BUFFER, vboID)
+
         val textCoordsBuffer = MemoryUtil.memAllocFloat(textCoords.size)
         textCoordsBuffer.put(textCoords).flip()
 
         glBufferData(GL_ARRAY_BUFFER, textCoordsBuffer, GL_STATIC_DRAW)
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0)
 
-        // Bind the VBO
-        glBindBuffer(GL_ARRAY_BUFFER, vboID)
         // Push the vertices array in the VBO
         glBufferData(GL_ARRAY_BUFFER, data, GL_STATIC_DRAW)
         // Push the VBO in the VAO at index 0

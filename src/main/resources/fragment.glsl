@@ -1,11 +1,27 @@
 #version 330
 
 in  vec2 outTexCoord;
-out vec4 fragColor;
-
 uniform sampler2D texture_sampler;
 
+int get(int x, int y) {
+    return int(texture2D(texture_sampler, (gl_FragCoord.xy + vec2(x, y))).r);
+}
+
 void main() {
-    vec4 color = texture(texture_sampler, outTexCoord);
-    fragColor = vec4(color.r, color.r, color.r, 1.0f); // copy single channel from texture to rgba
+    int sum = get(-1, -1) +
+              get(-1,  0) +
+              get(-1,  1) +
+              get( 0, -1) +
+              get( 0,  1) +
+              get( 1, -1) +
+              get( 1,  0) +
+              get( 1,  1);
+    if (sum == 3) {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    } else if (sum == 2) {
+        float current = float(get(0, 0));
+        gl_FragColor = vec4(current, current, current, 1.0);
+    } else {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
 }

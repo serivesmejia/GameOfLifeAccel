@@ -5,14 +5,23 @@ import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL30.glGenerateMipmap
 import org.lwjgl.system.MemoryUtil
+import java.util.*
 
 class LifeTexture(size: Int) {
 
-    companion object {
-        val buffer = BufferUtils.createByteBuffer(Life.resolution * Life.resolution)
+    val buffer = ByteArray(size * size * 4)
 
-        init {
-            MemoryUtil.memSet(buffer, 120)
+    val random = Random(System.currentTimeMillis())
+
+    init {
+        var i = 0
+
+        while(i < buffer.size) {
+            val v = if(random.nextBoolean()) 255.toByte() else 0.toByte()
+
+            buffer[i] = v
+
+            i += 1
         }
     }
 
@@ -25,7 +34,10 @@ class LifeTexture(size: Int) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, size, size, 0, GL_RED, GL_UNSIGNED_BYTE, buffer)
+        val b = BufferUtils.createByteBuffer(buffer.size)
+        b.put(buffer)
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size, size, 0, GL_RGBA, GL_UNSIGNED_BYTE, b)
 
         glGenerateMipmap(GL_TEXTURE_2D)
     }

@@ -90,7 +90,6 @@ class Shader {
         glUniform1i(location, value)
     }
 
-
     var texture: Int = 0
         set(value) {
             setUniform(texureSamplerLocation, value)

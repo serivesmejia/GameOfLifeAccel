@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL11
 class Life {
 
     companion object {
-        val resolution = 10000
+        val resolution = 100
     }
 
     val window = Window()
